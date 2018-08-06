@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+          "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzfp.cloud.user.dao.UtilDao">
+	
+	<!--查询 所有已设置了，预警值(认证预警值、在途预警值)的  税号和预警值信息 -->
+	<select id="findAllInfo" resultType="java.util.Map">
+		<!--   uuid as userid  维护时，没找到 userid 没有用到 
+		SELECT uuid as userid,nsrsbh,lrr as nsrmc,rzyjz,ztyjz FROM t_jx_invoice_yjzsz -->
+		SELECT uuid ,nsrsbh,lrr as nsrmc,rzyjz,ztyjz,nsrzh FROM t_jx_invoice_yjzsz
+	</select>
+	
+	<!-- 添加预警消息 -->
+	<insert id="addWarningMsg" parameterType="java.util.Map">
+		INSERT INTO 
+			t_jx_invoice_message (ghf_user_id,title,creat_time,ready_flag,type,xhf_user_id,
+						  content,is_reply,is_opt,redirect_url,nsrsbh) 
+		VALUES
+			(#{ghf_user_id,jdbcType=VARCHAR},#{title,jdbcType=VARCHAR},#{creat_time,jdbcType=TIMESTAMP},
+		 	 #{ready_flag,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{xhf_user_id,jdbcType=VARCHAR},
+		 	 #{content,jdbcType=VARCHAR},#{is_reply,jdbcType=CHAR},#{is_opt,jdbcType=CHAR},
+		 	 #{redirect_url,jdbcType=VARCHAR},#{nsrsbh,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 查询认证期限预警信息 -->
+	<select id="getCertificationOfDeadlineWarnings"  parameterType="java.util.Map" resultType="java.lang.Integer">
+	 	select count(t.uuid) count from (
+	 		select 
+				m.uuid, m.nsrsbh, m.fplx_code, m.fpdm, m.fphm,m.kprq, m.jym,m.lrfs, m.xfsh,m.xfmc, m.xfdzdh, m.xfyhzh,
+				m.gfsh,m.gfmc,m.gfdzdh,m.gfyhzh,m.hjje,m.hjse,m.jshj,m.jshjdx,m.jqbm,m.pjbz,m.fhr,m.skr,m.kpr,m.lrsj,m.lrry,
+				m.xgsj,m.xgry,m.glid,m.wlid,m.fpssqydm,m.fpssqymc,m.skssq,m.lrrymc,
+				y.rzzt,
+				case when 
+					TIMESTAMPDIFF(DAY,kprq,#{dfhalfyear}) &lt; 0
+				then 
+					TIMESTAMPDIFF(DAY,date(now()),kprq) + #{yjz360}
+				else 
+					TIMESTAMPDIFF(DAY,date(now()),kprq) + #{yjz180} end res
+				from  t_jx_invoice_synch m
+				LEFT JOIN  t_jx_invoice_auth  y on m.uuid=y.uuid and y.rzzt = #{rzzt}
+				<!-- 购方税号，和预警值表中 -->
+				where 1=1 and m.gfsh = #{nsrsbh} and m.fpzt = #{fpzt}
+			) t where t.res &lt; #{num}
+	</select>       <!-- ↑此res指子sql的主要结果 -->
+	
+	<!-- 查询在途发票预警信息 -->
+	<select id="getSendingWarnings"  parameterType="java.util.Map" resultType="java.lang.Integer">
+	 	select count(t.uuid) count from ( 
+			select 
+				m.uuid, m.nsrsbh, m.fplx_code, m.fpdm, m.fphm,m.kprq, m.jym,m.lrfs, m.xfsh,m.xfmc, m.xfdzdh, m.xfyhzh,
+				m.gfsh,m.gfmc,m.gfdzdh,m.gfyhzh,m.hjje,m.hjse,m.jshj,m.jshjdx,m.jqbm,m.pjbz,m.fhr,m.skr,m.kpr,m.lrsj,m.lrry,
+				m.xgsj,m.xgry,m.glid,m.wlid,m.fpssqydm,m.fpssqymc,m.skssq,m.lrrymc,
+				y.rzzt,
+				TIMESTAMPDIFF(DAY,kprq,date(now())) res
+				from  t_jx_invoice_synch m
+				LEFT JOIN  t_jx_invoice_auth  y on m.uuid=y.uuid and y.rzzt = #{rzzt}
+				where 1=1 and m.nsrsbh = #{nsrsbh} and m.fpzt = #{fpzt}
+			) t where t.res &gt; #{num}
+	</select>
+	
+	<!-- 查询黑名单信息 -->
+	<select id="getBlackListWarnings"  parameterType="java.util.Map" resultType="java.lang.Integer">
+	 	SELECT count(t.uuid) count from(
+		SELECT
+			m.uuid,
+			n.hmdsh
+		FROM
+			t_jx_invoice_synch m 
+			LEFT JOIN t_jx_invoice_hmd n on m.xfsh = n.hmdsh
+			LEFT JOIN  t_jx_invoice_auth  y on m.uuid=y.uuid and y.rzzt = #{rzzt} and m.fpzt = #{fpzt}
+		) t where t.hmdsh is not null
+	</select>
+	
+</mapper>

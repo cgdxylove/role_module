@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+          "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzfp.cloud.user.dao.BussGroupDao">
+ 	 <!-- 集团下的子账号查询 -->
+ 	<select id="bussGroupJgzhwh_list" resultType="java.util.HashMap"  parameterType="java.util.Map">
+		SELECT t.zhid,t.nsrsbh,t.nsrsbh nsrzh,t.nsrmc,t.zhzt,t.lxdh,t.dz,t.yx,
+		date_format(t.yxq_q,'%Y-%m-%d %H:%i:%s') as yxq_q,date_format(t.yxq_z,'%Y-%m-%d %H:%i:%s') as yxq_z,
+		t.zhbs,t.ssjtnsrsbh,t.lrr,date_format(t.lrsj,'%Y-%m-%d %H:%i:%s') as lrsj,t.bz,t.sfcp,sksb,appid,khh,yhzh
+		from spu_t_zhxx t
+		where 1=1  
+		<if test="nsrsbh != null and nsrsbh != ''">
+			and t.nsrsbh like '%${nsrsbh}%'
+		</if>
+		<if test="nsrmc != null and nsrmc != ''">
+			and t.nsrmc like '%${nsrmc}%'
+		</if>
+		<if test="zhzt != null and zhzt != ''">
+			and t.zhzt = #{zhzt}
+		</if>
+		<if test="zhbs != null and zhbs != ''">
+			and t.zhbs = #{zhbs}
+		</if>
+		<if test="ssjtnsrsbh != null and ssjtnsrsbh != ''">
+			and t.ssjtnsrsbh = #{ssjtnsrsbh}
+		</if>
+		order by t.lrsj desc
+	</select>
+	<!-- 校验子账号 -->
+	<select id="checkNsrsbh" parameterType="java.util.Map" resultType="java.util.HashMap">
+	  	select * from spu_t_zhxx where nsrsbh=#{nsrsbh} and zhzt='0'
+	  	<if test="zhid != null and zhid != ''">
+			and zhid != #{zhid}
+		</if>
+	</select>
+	<!-- 查询主账号菜单 -->
+	<select id="querycdByZzh" parameterType="java.util.Map" resultType="java.util.HashMap">
+		select DISTINCT a.cdid id,c.cdmc name,c.s_cdid pId,c.cdxh,'true' open from spu_t_zh_cd  a
+		left join spu_t_zhxx b on a.zhid = b.zhid
+		left join spu_t_cd_new  c on a.cdid = c.cdid
+		where b.nsrsbh=#{nsrsbh} and c.yxbz ='Y'
+		order by c.cdxh 
+	</select>
+	<!-- 获取已选菜单 -->
+	<select id="querycdsByCheck" parameterType="java.util.Map" resultType="java.util.HashMap">
+	 <!--   select b.cdid id from spu_t_zh_cd b 
+		left join spu_t_zhxx c on b.zhid = c.zhid 
+		where c.zhid=#{zhid}  and c.zhzt='0' -->
+		
+		select b.cdid id from spu_t_zh_cd b 
+		left join spu_t_zhxx c on b.zhid = c.zhid 
+		left join spu_t_cd_new a on a.cdid = b.cdid
+		where c.zhid=#{zhid}
+		and a.yxbz ='Y'
+	</select>
+	<!-- 获取账号数量 -->
+	<select id="queryExtendsNsrsbh" parameterType="java.util.HashMap" resultType="java.lang.Long">
+		select count(1) from spu_t_zhxx where nsrsbh=#{nsrsbh}
+  	</select>
+  	<!-- 获取账号菜单 -->
+  	<select id="queryCdsByNsrsbh" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select * from spu_t_zh_cd where zhid= (select a.zhid from spu_t_zhxx a where a.nsrsbh=#{nsrsbh})
+    </select>
+    <!-- 获取有效期内的用户总数量 -->
+    <select id="queryKkhslByNsrsbh" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	    select sum(zzhsl) from spu_t_ddxx where nsrsbh=#{nsrsbh}
+  	     <![CDATA[and yxq_q<=CURRENT_TIMESTAMP and yxq_z>=CURRENT_TIMESTAMP]]>
+  	</select>
+  	<!-- 获取子账号 -->
+  	<select id="queryAllZzhBySsjtNsrsbh" parameterType="java.util.Map" resultType="java.util.Map">
+  	    select * from spu_t_zhxx where ssjtnsrsbh=#{nsrsbh} and zhbs='1' and zhzt='0'
+  	</select>
+  	<!-- 保存账号 -->
+  	<insert id="zhSave" parameterType="java.util.Map">
+		insert into spu_t_zhxx(zhid,nsrsbh,nsrmc,lxdh,ssjtnsrsbh,zhzt,yx,dz,sfcp,zhbs,lrr,yxq_q,yxq_z,lrsj,sksb,appid,khh,yhzh)
+		values(#{zhid},#{nsrsbh},#{nsrmc},#{lxdh},#{ssjtnsrsbh},#{zhzt},#{yx},#{dz},#{sfcp},#{zhbs},#{lrr},#{yxq_q},#{yxq_z},#{lrsj},#{sksb},#{appid},#{khh},#{yhzh})
+  	</insert>
+  	<!-- 保存用户 -->
+  	<insert id="addYhxx" parameterType="java.util.Map">
+		 insert into spu_t_yhxx
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="yhid != null and yhid != ''" >
+	        yhid,
+	      </if>
+	      <if test="nsrsbh != null and nsrsbh != ''" >
+	        nsrsbh,
+	      </if>
+	      <if test="yh != null and yh != ''" >
+	        yh,
+	      </if>
+	      <if test="yhmc != null and yhmc !=''" >
+	        yhmc,
+	      </if>
+	      <if test="mm != null and mm !=''" >
+	        mm,
+	      </if>
+	      <if test="yhzt != null and yhzt !=''" >
+	        yhzt,
+	      </if>
+	      <if test="lrr != null and lrr !=''" >
+	        lrr,
+	      </if>
+	      <if test="lrsj != null and lrsj !=''" >
+	        lrsj,
+	      </if>
+	      <if test="lxdh != null and lxdh !=''" >
+	        lxdh,
+	      </if>
+	      <if test="yx != null and yx !=''" >
+	        yx,
+	      </if>
+	      <if test="dz != null and dz !=''" >
+	       dz,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="yhid != null and yhid !=''" >
+	        #{yhid},
+	      </if>
+	      <if test="nsrsbh != null and nsrsbh !=''" >
+	        <![CDATA[#{nsrsbh},]]>
+	      </if>
+	      <if test="yh != null and yh !=''" >
+	        <![CDATA[#{yh},]]>
+	      </if>
+	      <if test="yhmc != null and yhmc !=''" >
+	        #{yhmc},
+	      </if>
+	      <if test="mm != null and mm !=''" >
+	        #{mm},
+	      </if>
+	      <if test="yhzt != null and yhzt !=''" >
+	        #{yhzt},
+	      </if>
+	      <if test="lrr != null and  lrr !=''" >
+	        #{lrr},
+	      </if>
+	      <if test="lrsj != null and lrsj !=''" >
+	        #{lrsj},
+	      </if>
+	       <if test="lxdh != null and lxdh !=''" >
+	        #{lxdh},
+	      </if>
+	      <if test="yx != null and yx !=''" >
+	        #{yx},
+	      </if>
+	      <if test="dz != null and dz !=''" >
+	        #{dz},
+	      </if>
+	    </trim>
+	</insert>
+	<!-- 保存角色 -->
+	<insert id="addJs" parameterType="java.util.Map">
+		insert into spu_t_js(jsid,jsmc,nsrsbh,yxbz,jslx,lrsj)
+		values(#{jsid},#{jsmc},#{nsrsbh},#{yxbz},#{jslx},#{lrsj})
+	</insert>
+	<!-- 保存用户角色 -->
+	<insert id="addSpu_t_yhjs_gl" parameterType="java.util.Map">
+		insert into spu_t_yhjs_gl(id,yhid,jsid,yxbz,czr,lrsj)
+		values(#{id},#{yhid},#{jsid},#{yxbz},#{czr},#{lrsj})
+	</insert>
+	<!-- 保存角色菜单 -->
+	<insert id="addSpu_t_jscd_gl_Batch" parameterType="java.util.ArrayList">  
+	    insert into spu_t_jscd_gl(id,jsid,cdid,yxbz,yxq_q,yxq_z,czr,lrsj)  
+	  	values(#{id},#{jsid},#{cdid},#{yxbz},#{yxq_q},#{yxq_z},#{czr},#{lrsj})
+    </insert> 
+    <!-- 保存账号菜单 -->
+    <insert id="addSpu_t_zh_cd" parameterType="java.util.Map">
+		insert into spu_t_zh_cd(id,zhid,cdid)
+		values(#{id},#{zhid},#{cdid})
+	</insert>
+	<!-- 查询账号信息-->
+	<select id="queryZhxxByNsrsbh" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select * from spu_t_zhxx where nsrsbh=#{ssjtnsrsbh} and zhzt='0'
+    </select>
+    <!-- 查询账号信息-->
+	<select id="queryZhxxByNsrsbhs" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select * from spu_t_zhxx where nsrsbh=#{nsrsbh} and zhzt='0'
+    </select>
+    <!-- 查询用户角色-->
+    <select id="queryYhjs" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select *  from spu_t_js where jslx ='0' and nsrsbh=#{nsrsbh}
+    </select>
+     <!-- 删除角色菜单-->
+    <delete id="deleteSpu_t_jscd_gl" parameterType="java.util.Map">
+		delete from spu_t_jscd_gl  where jsid = #{jsid}
+    </delete>
+    <!-- 删除账号菜单-->
+    <delete id="deleteZhcd" parameterType="java.lang.String">
+		delete from spu_t_zh_cd  where zhid = #{zhid}
+    </delete>
+     <!-- 修改账号-->
+    <update id="zhUpdate" parameterType="java.util.HashMap">
+		update spu_t_zhxx set
+				lxdh=#{lxdh},
+				yx=#{yx},
+				dz=#{dz},
+				sfcp=#{sfcp},
+				xgr=#{xgr}, 
+                zhzt=#{zhzt},
+                sksb=#{sksb},
+                appid=#{appid},
+                khh=#{khh},
+                yhzh=#{yhzh}
+		where zhid = #{zhid} 
+	</update>
+	 <!-- 修改用户-->
+	<update id="yhUpdate" parameterType="java.util.HashMap">
+		update spu_t_yhxx set
+				lxdh=#{lxdh},
+				yx=#{yx},
+				dz=#{dz},
+				xgr=#{xgr},
+				xgsj=now()
+		where nsrsbh = #{nsrsbh} 
+	</update>
+	<!-- 批量保存账号-->
+	<insert id="addZhxxs" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_zhxx (zhid,nsrsbh,nsrmc,sfcp,lxdh,dz,yx,zhbs,zhzt,lrr,lrsj,ssjtnsrsbh,yxq_q,yxq_z) 
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.zhid,jdbcType=VARCHAR},
+		 #{invMap.nsrsbh,jdbcType=VARCHAR},
+		 #{invMap.nsrmc,jdbcType=VARCHAR},
+		 #{invMap.sfcp,jdbcType=VARCHAR},
+		 #{invMap.lxdh,jdbcType=VARCHAR},
+		 #{invMap.dz,jdbcType=VARCHAR},
+		 #{invMap.yx,jdbcType=VARCHAR},
+		 #{invMap.zhbs,jdbcType=CHAR},
+		 #{invMap.zhzt,jdbcType=CHAR},
+		 #{invMap.lrr,jdbcType=VARCHAR},
+		 #{invMap.lrsj,jdbcType=DATE},
+		 #{invMap.ssjtnsrsbh,jdbcType=VARCHAR},
+		 #{invMap.yxq_q,jdbcType=DATE},
+		 #{invMap.yxq_z,jdbcType=DATE})
+	</foreach>
+	</insert>
+	<!-- 批量保存用户-->
+	<insert id="addYhxxs" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_yhxx (yhid,nsrsbh,yh,yhmc,mm,yhzt,lrr,lrsj,lxdh,yx,dz)
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.yhid,jdbcType=VARCHAR},
+		 #{invMap.nsrsbh,jdbcType=VARCHAR},
+		 #{invMap.yh,jdbcType=VARCHAR},
+		 #{invMap.yhmc,jdbcType=VARCHAR},
+		 #{invMap.mm,jdbcType=VARCHAR},
+		 #{invMap.yhzt,jdbcType=CHAR},
+		 #{invMap.lrr,jdbcType=VARCHAR},
+		 #{invMap.lrsj,jdbcType=DATE},
+		 #{invMap.lxdh,jdbcType=VARCHAR},
+		 #{invMap.yx,jdbcType=VARCHAR},
+		 #{invMap.dz,jdbcType=VARCHAR})
+	</foreach>
+	</insert>
+	<!-- 批量保存角色-->
+	<insert id="addJsxxs" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_js(jsid,jsmc,nsrsbh,yxbz,jslx,lrsj)
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.jsid,jdbcType=VARCHAR},
+		 #{invMap.jsmc,jdbcType=VARCHAR},
+		 #{invMap.nsrsbh,jdbcType=VARCHAR},
+		 #{invMap.yxbz,jdbcType=CHAR},
+		 #{invMap.jslx,jdbcType=CHAR},
+		 #{invMap.lrsj,jdbcType=DATE})
+	</foreach>
+	</insert>
+	<!-- 批量保存用户角色-->
+	<insert id="addYhjss" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_yhjs_gl(id,yhid,jsid,yxbz,czr,lrsj)
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.id,jdbcType=CHAR},
+		 #{invMap.yhid,jdbcType=VARCHAR},
+		 #{invMap.jsid,jdbcType=VARCHAR},
+		 #{invMap.yxbz,jdbcType=CHAR},
+		 #{invMap.czr,jdbcType=VARCHAR},
+		 #{invMap.lrsj,jdbcType=DATE})
+	</foreach>
+	</insert>
+	<!-- 批量保存角色菜单-->
+	<insert id="addJscds" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_jscd_gl(id,jsid,cdid,yxbz,yxq_q,yxq_z,czr,lrsj)  
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.id,jdbcType=VARCHAR},
+		 #{invMap.jsid,jdbcType=VARCHAR},
+		 #{invMap.cdid,jdbcType=VARCHAR},
+		 #{invMap.yxbz,jdbcType=CHAR},
+		 #{invMap.yxq_q,jdbcType=DATE},
+		 #{invMap.yxq_z,jdbcType=DATE},
+		 #{invMap.czr,jdbcType=VARCHAR},
+		 #{invMap.lrsj,jdbcType=DATE})
+	</foreach>
+	</insert>
+	<!-- 批量保存账号菜单-->
+	<insert id="addZhcds" parameterType="java.util.ArrayList">
+	INSERT INTO spu_t_zh_cd(id,zhid,cdid)
+	VALUES
+	<foreach collection="list" item="invMap" index="index" separator=",">
+		(#{invMap.id,jdbcType=VARCHAR},
+		 #{invMap.zhid,jdbcType=VARCHAR},
+		 #{invMap.cdid,jdbcType=VARCHAR})
+	</foreach>
+	</insert>
+	<!-- 查询账号信息-->
+	<select id="bussGroupJgzhwhList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT t.zhid,t.nsrsbh,t.nsrsbh nsrzh,t.nsrmc,t.zhzt,t.lxdh,t.dz,t.yx,
+		date_format(t.yxq_q,'%Y-%m-%d %H:%i:%s') as yxq_q,date_format(t.yxq_z,'%Y-%m-%d %H:%i:%s') as yxq_z,
+		t.zhbs,t.ssjtnsrsbh,t.lrr,date_format(t.lrsj,'%Y-%m-%d %H:%i:%s') as lrsj,t.bz,t.sfcp from spu_t_zhxx t
+		where 1=1  
+		<if test="nsrsbh != null and nsrsbh != ''">
+			and t.nsrsbh like '%${nsrsbh}%'
+		</if>
+		<if test="nsrmc != null and nsrmc != ''">
+			and t.nsrmc like '%${nsrmc}%'
+		</if>
+		<if test="zhzt != null and zhzt != ''">
+			and t.zhzt = #{zhzt}
+		</if>
+		<if test="zhbs != null and zhbs != ''">
+			and t.zhbs = #{zhbs}
+		</if>
+		<if test="ssjtnsrsbh != null and ssjtnsrsbh != ''">
+			and t.ssjtnsrsbh = #{ssjtnsrsbh}
+		</if>
+		order by t.lrsj
+	</select>
+</mapper>

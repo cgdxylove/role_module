@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+
+	<!-- 开启aop配置 -->
+	<aop:aspectj-autoproxy  proxy-target-class="true"/>
+
+	<!-- spring 任务执行器 @Async -->
+	<task:executor id="executor" pool-size="10" />
+	<!-- spring 任务调度器 @Scheduled -->
+	<task:scheduler id="scheduler" pool-size="10" />
+	
+	<task:annotation-driven scheduler="scheduler" executor="executor" proxy-target-class="true" />
+
+	<!--<bean id="myjob" class="com.dzfp.cloud.user.jobs.Job" />-->
+    <!--<task:scheduled-tasks scheduler="scheduler">
+    	&lt;!&ndash; <task:scheduled ref="myjob" method="ctcwarning" cron="* 10/10 * * * ?" /> &ndash;&gt;
+    	
+    	<task:scheduled ref="myjob" method="ctcwarning" cron="0 0 1 * * *" /> &lt;!&ndash; 每月一日的触发  &ndash;&gt;
+    </task:scheduled-tasks>-->
+</beans>

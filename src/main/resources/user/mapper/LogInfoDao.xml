@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzfp.cloud.common.dao.LogInfoDao">
+    <!-- 操作日志查询 -->
+	<select id="queryLogInfoList" parameterType="java.util.Map"
+		resultType="java.util.HashMap">
+		select id,nsrsbh,czrmc,czrzh,cznr,DATE_FORMAT(czsj,'%Y-%c-%d %H:%i:%s') czsj,bz,rzmk,status 
+		  from spu_t_log
+		  where 1=1
+          <if test="nsrsbh!=null  and  nsrsbh != '' ">
+			 and nsrsbh = #{nsrsbh}
+		  </if>
+		  <if test="status!=null  and  status != '' ">
+			 and status = #{status}
+		  </if>
+		  <if test="czrzh!=null and  czrzh != ''">
+			 and czrzh = #{czrzh}
+	      </if>
+		  <if test="rzmk!=null and  rzmk != ''">
+			 and rzmk like CONCAT(CONCAT('%', #{rzmk}),'%')	
+		  </if>
+		  <if test="starttime!=null and  starttime != ''">
+			 and czsj &gt;= #{starttime}
+		  </if>
+		  <if test="endtime!=null and  endtime != ''">
+			 and czsj &lt;= #{endtime}
+		  </if>
+		 order by czsj desc
+	</select>
+	
+	<!--操作日志保存  -->
+	<insert id="saveLogInfo" parameterType="java.util.Map"> 
+		INSERT INTO spu_t_log (id, nsrsbh, czrmc, czrzh, cznr, czsj, bz, rzmk,status) 
+		     VALUES (#{id}, #{nsrsbh}, #{czrmc}, #{czrzh}, #{cznr}, now(),#{bz}, #{rzmk}, #{status}) 
+    </insert>
+    
+    <!-- 查询操作用户列表信息 -->
+    <select id="queryOperator" parameterType="java.util.Map" resultType="java.util.HashMap">
+      select yhid,nsrsbh,yh,yhmc,yhzt,bz,lxdh,dz,yx from spu_t_yhxx where nsrsbh=#{nsrsbh} and yhzt='0'
+    </select>
+    
+</mapper>
