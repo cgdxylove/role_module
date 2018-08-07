@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dzfp.cloud.user.dao.ExcelpzDao">
-	
-	<select id="findForObject" parameterType="java.util.Map" resultType="java.util.Map">
-		select * from t_jx_excel_pz where dm = #{dm} and yxbz='Y'
-	</select>
-</mapper>

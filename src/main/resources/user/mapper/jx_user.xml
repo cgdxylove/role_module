@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dzfp.cloud.user.dao.UserLoginDao">
-	<select id="getUserList" parameterType="java.util.Map" resultType="java.util.Map">
-		select * from jx_t_invoice
+<mapper namespace="org.show.user.dao.TestDao">
+	<select id="queryUserList" resultType="java.util.Map">
+		select * from t_sys_user
 	</select>
 		<!-- 用户信息查询 -->
 	<select id="queryUserInfo" parameterType="java.util.Map"
