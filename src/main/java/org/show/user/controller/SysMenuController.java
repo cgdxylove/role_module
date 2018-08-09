@@ -1,6 +1,7 @@
 package org.show.user.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.show.user.service.SysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,5 +29,15 @@ public class SysMenuController {
             return null ;
         else
             return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "queryMenuListPage")
+    @ResponseBody
+    public String queryMenuListPage(HttpServletRequest request, HttpServletResponse response
+            , @RequestParam Map<String, Object> param){
+        /*MysqlPageBean<Object> bean  = sysMenuService.queryMenuListPage(param);*/
+        Map map = sysMenuService.queryMenuListPage(param);
+        String str = JSONObject.toJSONString(map);
+        return str;
     }
 }

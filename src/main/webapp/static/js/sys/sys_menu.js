@@ -11,7 +11,7 @@ function setHeight(){
 }
 function loadDatagrid(){
     $("#datagrid").datagrid({
-        url : 'sysMenuData/queryMenuListAll.do',
+        url : 'sysMenuData/queryMenuListPage.do',
         fit : true, // 自适应上级容器 高度和宽度
         rownumbers : true, //若设置为 true，则显示带有行号的列。默认为false
         fitColumns : false, //设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。默认为false
@@ -47,12 +47,12 @@ function loadDatagrid(){
                 align : "center"
             },
             {
-                title : '分配按钮',
+                title : '操作',
                 field : 'operation',
                 width : 60,
                 align : "center",
                 formatter: function(value,rowData,rowIndex){
-                    var str = '<span class="tips datagrid-btn datagrid-view" title="查看" onclick="viewMessage('+rowIndex+')"></span>';
+                    var str = '<button class="" title="分配按钮" onclick="viewMessage('+rowIndex+')"></button>';
                     return str;
                 }
             }
@@ -64,7 +64,7 @@ function loadDatagrid(){
         pagePosition : "bottom", // 'top'，'bottom'，'both'
         pageNumber : 1, // 初始化页码 默认第1页
         pageSize : 15, // 每页显示的记录条数，初始化页面尺寸
-        pageList : [ 15, 30, 45 ],
+        pageList : [ 10,15, 30, 45 ],
         rowStyler:function(index,row){},
         onLoadSuccess : function(data) { }
     });
@@ -140,8 +140,10 @@ function deleteMessage(){
 }
 
 function viewMessage(index){
+    alert();
+    return  ;
     $.ajax({
-        url: 'message/updateMessage.do',
+        url: '',
         type: "POST",
         dataType:'json',
         data:{"menu_id":row.menu_id},

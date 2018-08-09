@@ -12,4 +12,19 @@
 		from t_sys_menu
 	</select>
 
+	<select id="queryMenuPage" parameterType="java.util.Map" resultType="java.util.Map">
+		select
+		<include refid="allColumns"></include>
+		from t_sys_menu
+		where  1=1
+
+		limit #{start},#{pageSize}
+
+	</select>
+
+	<select id="countMenu" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from t_sys_menu
+		where  1=1
+	</select>
+
 </mapper>
