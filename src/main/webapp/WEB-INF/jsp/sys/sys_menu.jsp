@@ -36,15 +36,15 @@
 	</table>
 	<div id="toolbar">
 		<form class="form-inline" role="form">
-			<div class="form-group">
-				<label class="sr-only" for="name">名称</label>
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">名称</span>
 				<input type="text" class="form-control" id="name" placeholder="">
 			</div>
-			<div class="form-group">
-				<label class="sr-only" for="name">路径URL</label>
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">路径URL</span>
 				<input type="text" class="form-control" id="URL" placeholder="">
 			</div>
-			<button type="submit" class="btn btn-default">提交</button>
+			<button type="submit" class="btn btn-info">提交</button>
 		</form>
 		<ul>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="javascript:$('#datagrid').edatagrid('addRow')">New</a>
