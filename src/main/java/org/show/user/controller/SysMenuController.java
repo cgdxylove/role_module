@@ -35,7 +35,6 @@ public class SysMenuController {
     @ResponseBody
     public String queryMenuListPage(HttpServletRequest request, HttpServletResponse response
             , @RequestParam Map<String, Object> param){
-        /*MysqlPageBean<Object> bean  = sysMenuService.queryMenuListPage(param);*/
         Map map = sysMenuService.queryMenuListPage(param);
         String str = JSONObject.toJSONString(map);
         return str;

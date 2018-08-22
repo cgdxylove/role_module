@@ -1,5 +1,8 @@
 package org.show.user.util;
 
+import java.util.List;
+import java.util.Map;
+
 public class OrgStringUtill {
 
     public static Boolean isNull(String org){
@@ -25,4 +28,16 @@ public class OrgStringUtill {
             return false ;
     }
 
+    public static Boolean isEmpty(Object obj){
+        if(obj == null)
+            return true ;
+        else if ("".equals(obj.toString()))
+            return true ;
+        else if (obj instanceof List && ((List) obj).size()==0)
+            return true;
+        else if(obj instanceof Map && ((Map) obj).size()==0)
+            return true ;
+        else
+            return  false ;
+    }
 }

@@ -30,7 +30,6 @@ public class SysMenuServiceImpl implements SysMenuService {
         Map map = new HashMap();
         map.put("rows",pageList);
         map.put("total",count);
-        /*MysqlPageBean bean = new MysqlPageBean(pageList,count);*/
         return map ;
     }
 }

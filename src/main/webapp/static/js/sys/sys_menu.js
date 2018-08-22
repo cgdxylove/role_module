@@ -14,10 +14,10 @@ function loadDatagrid(){
         url : 'sysMenuData/queryMenuListPage.do',
         fit : true, // 自适应上级容器 高度和宽度
         rownumbers : true, //若设置为 true，则显示带有行号的列。默认为false
-        fitColumns : false, //设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。默认为false
+        fitColumns : true, //设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。默认为false
         checkOnSelect:true, //若设置为 true，当用户点击某一行时，则会选中/取消选中复选框。若设置为 false 时，只有当用户点击了复选框时，才会选中/取消选中复选框。默认为true
         resizable : true, //设置为 true，则允许该列可调整尺寸
-        striped : false, // 设置为 true，则把行条纹化。（即奇偶行使用不同背景色）默认为false
+        striped : true, // 设置为 true，则把行条纹化。（即奇偶行使用不同背景色）默认为false
         singleSelect:false, //设置为 true，则只允许选中一行。默认为false
         remoteSort:false, //定义是否从服务器排序数据
         toolbar:'#toolbar',
@@ -47,13 +47,26 @@ function loadDatagrid(){
                 align : "center"
             },
             {
+                title : '录入时间',
+                field : 'lrsj',
+                width : 80,
+                align : "center"/*,
+                formatter: function(value,rowData,rowIndex){
+                    if(rowData.lrsj!=null && rowData.lrsj!="null" && ""!=rowData.lrsj && undefined!=typeof(rowData.lrsj)){
+                            return lrsj.substring(0,19);
+                    }else{
+                        return "" ;
+                    }
+                }*/
+            },
+            {
                 title : '操作',
                 field : 'operation',
                 width : 60,
                 align : "center",
                 formatter: function(value,rowData,rowIndex){
-                    var str = '<button class="" title="分配按钮" onclick="viewMessage('+rowIndex+')"></button>';
-                    return str;
+                    var str = '<span  value="分配按钮"  onclick="viewMessage('+rowIndex+')"></span>';
+                    return "test";
                 }
             }
         ]],
@@ -64,9 +77,17 @@ function loadDatagrid(){
         pagePosition : "bottom", // 'top'，'bottom'，'both'
         pageNumber : 1, // 初始化页码 默认第1页
         pageSize : 15, // 每页显示的记录条数，初始化页面尺寸
-        pageList : [ 10,15, 30, 45 ],
-        rowStyler:function(index,row){},
-        onLoadSuccess : function(data) { }
+        pageList : [ 10,15, 30 ],
+        rowStyler:function(index,row){
+            if(index%2==1){
+                return 'background:#f6f7fa'
+            }else{
+                return 'background:#fff'
+            }
+        },
+        onLoadSuccess : function(data) {
+
+        }
     });
 }
 
@@ -140,9 +161,9 @@ function deleteMessage(){
 }
 
 function viewMessage(index){
-    alert();
+    alert(index);
     return  ;
-    $.ajax({
+    /*$.ajax({
         url: '',
         type: "POST",
         dataType:'json',
@@ -151,5 +172,5 @@ function viewMessage(index){
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
         }
-    });
+    });*/
 }
