@@ -50,14 +50,7 @@ function loadDatagrid(){
                 title : '录入时间',
                 field : 'lrsj',
                 width : 80,
-                align : "center"/*,
-                formatter: function(value,rowData,rowIndex){
-                    if(rowData.lrsj!=null && rowData.lrsj!="null" && ""!=rowData.lrsj && undefined!=typeof(rowData.lrsj)){
-                            return lrsj.substring(0,19);
-                    }else{
-                        return "" ;
-                    }
-                }*/
+                align : "center"
             },
             {
                 title : '操作',
@@ -77,17 +70,7 @@ function loadDatagrid(){
         pagePosition : "bottom", // 'top'，'bottom'，'both'
         pageNumber : 1, // 初始化页码 默认第1页
         pageSize : 15, // 每页显示的记录条数，初始化页面尺寸
-        pageList : [ 10,15, 30 ],
-        rowStyler:function(index,row){
-            if(index%2==1){
-                return 'background:#f6f7fa'
-            }else{
-                return 'background:#fff'
-            }
-        },
-        onLoadSuccess : function(data) {
-
-        }
+        pageList : [ 10,15, 35 ]
     });
 }
 

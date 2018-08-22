@@ -41,7 +41,9 @@
 
         </ul>
     </div>
-    <div id="content" region="center" style="width:500px;height:250px;"  class="easyui-tabs">
+    <div id="content" region="center" data-options="region:'center'">
+        <div class="easyui-tabs" id="contentTabs" data-options="fit:true,border:false">
+        </div>
     </div>
 </body>
 </html>

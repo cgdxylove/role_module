@@ -12,22 +12,23 @@ $(document).ready(function(){
 
 function openLeftWin(node) {
     var tabName = node.text;
-    if($("#content").tabs("exists", tabName)) {// 如果已存在，选中
-        $("#content").tabs("select", tabName);
+    var _url = node.attribute.url ;
+    if($("#contentTabs").tabs("exists", tabName)) {// 如果已存在，选中
+        $("#contentTabs").tabs("select", tabName);
+        var tab = $("#contentTabs").tabs('getTab',tabName);
+        var index = $("#contentTabs").tabs('getTabIndex',tab);
+        if(tab && tab.find('iframe').length > 0){
+            var _refresh_ifram = tab.find('iframe')[0];
+            _refresh_ifram.contentWindow.location.href=_url;
+        }
     }else {
-        $("#content").tabs("add", {
-            title : tabName,
-            selected : true,
-            closable : true,
-            href : node.attribute.url,//此处可动态跳转页面,在加载的json、或者后台数据中组合添加属性即可
-            tools : [ {  //加载刷新小按钮
-                iconCls : "icon-page_refresh",//应该使用8*8像素图片,没有找到8*8
-                handler : function() {
-                    var currentTab = $("#content").tabs('getSelected');
-                    refreshTab(currentTab);
-                }
-            } ]
+        var _content ="<iframe scrolling='auto' frameborder='0' src='"+_url+"' style='width:100%; height:100%'></iframe>";
+        $(contentTabs).tabs('add',{
+            title:tabName,
+            content:_content,
+            closable:true
         });
+
     }
 }
 
